@@ -1,39 +1,28 @@
-name: .NET Backend CI
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-# Se activa al hacer push o pull request en dev o main
+name: .NET
+
 on:
   push:
-    branches: [ dev, main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Runner Linux, suficiente para backend web
+
+    runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Clona el repo
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    # 2️⃣ Instala .NET 8
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-
-    # 3️⃣ Restaura dependencias
     - name: Restore dependencies
       run: dotnet restore
-
-    # 4️⃣ Build del proyecto en Release
-    - name: Build project
-      run: dotnet build --configuration Release --no-restore
-
-    # 5️⃣ Ejecuta tests si los tienes
-    - name: Run tests
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
       run: dotnet test --no-build --verbosity normal
-
-    # 6️⃣ Publica (opcional, prepara para Docker o despliegue)
-    - name: Publish
-      run: dotnet publish -c Release -o ./publish
