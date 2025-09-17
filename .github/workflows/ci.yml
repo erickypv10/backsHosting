@@ -1,5 +1,6 @@
 name: .NET Backend CI
 
+# Se activa al hacer push o pull request en dev o main
 on:
   push:
     branches: [ dev, main ]
@@ -8,17 +9,31 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Runner Linux, suficiente para backend web
 
     steps:
-    - uses: actions/checkout@v3
+    # 1️⃣ Clona el repo
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2️⃣ Instala .NET 8
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
+
+    # 3️⃣ Restaura dependencias
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
+
+    # 4️⃣ Build del proyecto en Release
+    - name: Build project
       run: dotnet build --configuration Release --no-restore
-    - name: Run Tests
+
+    # 5️⃣ Ejecuta tests si los tienes
+    - name: Run tests
       run: dotnet test --no-build --verbosity normal
+
+    # 6️⃣ Publica (opcional, prepara para Docker o despliegue)
+    - name: Publish
+      run: dotnet publish -c Release -o ./publish
